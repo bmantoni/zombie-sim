@@ -5,6 +5,7 @@ import 'package:flame/components/animation_component.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/game/game.dart';
 import 'package:flame/sprite.dart';
+import 'package:zombie_sim/background.dart';
 
 class Randomiser {
   final _random = new Random();
@@ -59,10 +60,25 @@ class PlayField {
   }
 }
 
+enum MovementMode {
+  Random,
+  Attracted
+}
+
 class Zombie {
+  // to tune the starting positions
   static const int SPAWN_HEIGHT_RANGE = 5;
+  static const int SPAWN_RIGHT_MARGIN_COLS = 3;
+
+  // how frequently to move (higher:more often)
+  static const int MOVE_FREQ = 5;
+
+  // how frequently to animate sprite (lower:slower)
+  static const double ANIMATE_FREQ = 0.3;
+
+  // fixed based on sprite sheet
   static const double TEXTURE_SIZE = 32.0;
-  static const double ZOMBIE_SIZE = TEXTURE_SIZE * 4;
+  static const double ZOMBIE_SIZE = TEXTURE_SIZE * 3;
 
   Randomiser _r = Randomiser();
   double _moveEveryTics = 0;
@@ -76,28 +92,33 @@ class Zombie {
 
   Zombie(PlayField field) {
     _field = field;
-    _moveEveryTics = _r.getRand(2, 4).toDouble();
+    setRandomMoveDelay();
 
     _component = AnimationComponent.sequenced(
-      ZOMBIE_SIZE, ZOMBIE_SIZE, 'zombie-v3-sheet.png', 3, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE, stepTime: 0.3);
+      ZOMBIE_SIZE, ZOMBIE_SIZE, 'zombie-v3-sheet.png', 3, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE, stepTime: ANIMATE_FREQ);
     setStartPosition();
   }
 
   setStartPosition() {
-    _loc = GridPoint(_r.getRand(1, _field.numCols - 1), _r.getRand(1, SPAWN_HEIGHT_RANGE));
+    _loc = GridPoint(_r.getRand(1, _field.numCols - SPAWN_RIGHT_MARGIN_COLS), _r.getRand(1, SPAWN_HEIGHT_RANGE));
     updateComponentPosition();
+  }
+
+  setRandomMoveDelay() {
+    _moveEveryTics = _r.getRand(1, MOVE_FREQ) / 2;
+    _timeSinceMove = 0;
   }
 
   move(double timeSince) {
     _timeSinceMove += timeSince;
     if (_timeSinceMove > _moveEveryTics) {
       _move();
-      _timeSinceMove = 0;
+      setRandomMoveDelay();
     }
   }
 
   _move() {
-    var dist = _r.getRand(1, 4); // 25% change of moving 2
+    var dist = _r.getRand(1, 5); // 20% change of moving 2
     _loc = PlayField.translate(_r.getRand(0, 4), _loc, 
       distance: dist == 1 ? 2 : 1);
     updateComponentPosition();
@@ -110,11 +131,13 @@ class Zombie {
 }
 
 class ZombieGame extends BaseGame {
+  var _bg;
   final _zombies = <Zombie>[];
   var _field;
   
   ZombieGame() {
-    _field = new PlayField(this);
+    _bg = Background(this);
+    _field = PlayField(this);
   }
 
   void addZombie() {
@@ -126,6 +149,7 @@ class ZombieGame extends BaseGame {
   @override
   void render(Canvas canvas) {
     //_zombies.forEach((p) { p.component.render(canvas); });
+    _bg.render(canvas);
     super.render(canvas);
   }
 
