@@ -31,10 +31,11 @@ class Zombie {
   static const int SPAWN_MARGIN_T = 40;
   static const int SPAWN_HEIGHT_RANGE = 125;
   static const double TEXTURE_SIZE = 32.0;
+  static const double ZOMBIE_SIZE = TEXTURE_SIZE * 4;
 
   Randomiser _r = Randomiser();
   ZombieGame _game;
-  PositionComponent _component;
+  AnimationComponent _component;
   get component => _component;
 
   // have a reference to the Game, so I can know bounding
@@ -42,7 +43,7 @@ class Zombie {
   Zombie(ZombieGame game) {
     _game = game;
     _component = AnimationComponent.sequenced(
-      32.0, 32.0, 'zombie-v3-sheet.png', 3, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE);
+      ZOMBIE_SIZE, ZOMBIE_SIZE, 'zombie-v3-sheet.png', 3, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE, stepTime: 0.3);
     setStartPosition();
   }
 
@@ -72,13 +73,15 @@ class ZombieGame extends BaseGame {
     add(z.component);
   }
   
-  /*@override
+  @override
   void render(Canvas canvas) {
-
-  }*/
+    //_zombies.forEach((p) { p.component.render(canvas); });
+    super.render(canvas);
+  }
 
   @override
   void update(double t) {
-    _zombies.forEach((p) { p.move(); });
+    super.update(t);
+    //_zombies.forEach((p) { p.move(); });
   }
 }
