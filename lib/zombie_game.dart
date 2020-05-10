@@ -26,49 +26,99 @@ class OtherSprite extends SpriteComponent {
   }
 }
 
+class GridPoint {
+  GridPoint(this.x, this.y);
+  int x;
+  int y;
+}
+
+class PlayField {
+  static const double COL_SIZE = 20;
+  static const double ROW_SIZE = 20;
+
+  ZombieGame _game;
+
+  double get width => _game.size.width;
+  double get height => _game.size.height;
+  int get numCols => width ~/ COL_SIZE;
+  int get numRows => height ~/ ROW_SIZE;
+
+  PlayField(this._game);
+
+  Point<double> getPointForGridPos(GridPoint p) {
+    return Point(p.x * COL_SIZE, p.y * ROW_SIZE);
+  }
+
+  static GridPoint translate(int direction, GridPoint p, {distance = 1}) {
+    var r = GridPoint(p.x, p.y);
+    if (direction == 0) r.x -= distance;
+    if (direction == 1) r.x += distance;
+    if (direction == 2) r.y -= distance;
+    if (direction >= 3) r.y += distance;
+    return r;
+  }
+}
+
 class Zombie {
-  static const int SPAWN_MARGIN_H = 10;
-  static const int SPAWN_MARGIN_T = 40;
-  static const int SPAWN_HEIGHT_RANGE = 125;
+  static const int SPAWN_HEIGHT_RANGE = 5;
   static const double TEXTURE_SIZE = 32.0;
   static const double ZOMBIE_SIZE = TEXTURE_SIZE * 4;
 
   Randomiser _r = Randomiser();
-  ZombieGame _game;
+  double _moveEveryTics = 0;
+  PlayField _field;
   AnimationComponent _component;
   get component => _component;
 
-  // have a reference to the Game, so I can know bounding
+  double _timeSinceMove = 0;
+  GridPoint _loc;
+  Point<double> get _locationPoint => _field.getPointForGridPos(_loc);
 
-  Zombie(ZombieGame game) {
-    _game = game;
+  Zombie(PlayField field) {
+    _field = field;
+    _moveEveryTics = _r.getRand(2, 4).toDouble();
+
     _component = AnimationComponent.sequenced(
       ZOMBIE_SIZE, ZOMBIE_SIZE, 'zombie-v3-sheet.png', 3, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE, stepTime: 0.3);
     setStartPosition();
   }
 
   setStartPosition() {
-    _component.x = _r.getRand(SPAWN_MARGIN_H, _game.size.width.round() - TEXTURE_SIZE.round()).toDouble();
-    _component.y = _r.getRand(SPAWN_MARGIN_T, SPAWN_HEIGHT_RANGE).toDouble();
+    _loc = GridPoint(_r.getRand(1, _field.numCols - 1), _r.getRand(1, SPAWN_HEIGHT_RANGE));
+    updateComponentPosition();
   }
 
-  move() {
-    final d = _r.getRand(0, 3);
-    final dist = _r.getRand(0, 10);
-    if (d == 0) _component.x -= dist;
-    if (d == 1) _component.x += dist;
-    if (d == 2) _component.y -= dist;
-    if (d == 3) _component.y += dist;
+  move(double timeSince) {
+    _timeSinceMove += timeSince;
+    if (_timeSinceMove > _moveEveryTics) {
+      _move();
+      _timeSinceMove = 0;
+    }
+  }
+
+  _move() {
+    var dist = _r.getRand(1, 4); // 25% change of moving 2
+    _loc = PlayField.translate(_r.getRand(0, 4), _loc, 
+      distance: dist == 1 ? 2 : 1);
+    updateComponentPosition();
+  }
+    
+  void updateComponentPosition() {
+    _component.x = _locationPoint.x;
+    _component.y = _locationPoint.y;
   }
 }
 
 class ZombieGame extends BaseGame {
   final _zombies = <Zombie>[];
+  var _field;
   
-  //ZombieGame() {}
+  ZombieGame() {
+    _field = new PlayField(this);
+  }
 
   void addZombie() {
-    final z = Zombie(this);
+    final z = Zombie(_field);
     _zombies.add(z); 
     add(z.component);
   }
@@ -82,6 +132,6 @@ class ZombieGame extends BaseGame {
   @override
   void update(double t) {
     super.update(t);
-    //_zombies.forEach((p) { p.move(); });
+    _zombies.forEach((p) { p.move(t); });
   }
 }
