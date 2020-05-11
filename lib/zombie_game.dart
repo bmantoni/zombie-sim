@@ -4,7 +4,10 @@ import 'dart:ui';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/game/game.dart';
+import 'package:flame/gestures.dart';
 import 'package:flame/sprite.dart';
+import 'package:flutter/gestures.dart';
+import 'package:zombie_sim/alarm.dart';
 import 'package:zombie_sim/background.dart';
 
 class Randomiser {
@@ -80,6 +83,8 @@ class Zombie {
   static const double TEXTURE_SIZE = 32.0;
   static const double ZOMBIE_SIZE = TEXTURE_SIZE * 3;
 
+  MovementMode _mode = MovementMode.Random;
+
   Randomiser _r = Randomiser();
   double _moveEveryTics = 0;
   PlayField _field;
@@ -111,13 +116,29 @@ class Zombie {
 
   move(double timeSince) {
     _timeSinceMove += timeSince;
-    if (_timeSinceMove > _moveEveryTics) {
-      _move();
-      setRandomMoveDelay();
+    if (_timeSinceMove <= _moveEveryTics)
+      return;
+
+    switch (_mode) {
+      case MovementMode.Random:
+        _moveRandomly();
+        setRandomMoveDelay();
+        break;
+      case MovementMode.Attracted:
+        _moveTowardsAttractor();
+        setRandomMoveDelay(); // and speed it up, since we're chasing something
+        break;
+      default:
     }
   }
 
-  _move() {
+  _moveTowardsAttractor() {
+    // find nearest & most attractive attractor
+    //   look in an expanding square around self
+    // move towards it
+  }
+
+  _moveRandomly() {
     var dist = _r.getRand(1, 5); // 20% change of moving 2
     _loc = PlayField.translate(_r.getRand(0, 4), _loc, 
       distance: dist == 1 ? 2 : 1);
@@ -130,14 +151,23 @@ class Zombie {
   }
 }
 
-class ZombieGame extends BaseGame {
-  var _bg;
+class ZombieGame extends BaseGame with TapDetector {
+  Background _bg;
   final _zombies = <Zombie>[];
-  var _field;
+  PlayField _field;
+
+  Alarm _alarm;
   
   ZombieGame() {
     _bg = Background(this);
     _field = PlayField(this);
+  }
+
+  @override
+  void onTapDown(TapDownDetails details) {
+    print("Player tap down on ${details.globalPosition.dx} - ${details.globalPosition.dy}");
+    _alarm = Alarm(details.globalPosition.dx, details.globalPosition.dy);
+    add(_alarm.component);
   }
 
   void addZombie() {
@@ -151,6 +181,7 @@ class ZombieGame extends BaseGame {
     //_zombies.forEach((p) { p.component.render(canvas); });
     _bg.render(canvas);
     super.render(canvas);
+    _alarm.render(canvas);
   }
 
   @override
