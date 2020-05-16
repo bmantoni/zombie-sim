@@ -1,8 +1,10 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
+import 'package:meta/meta.dart';
 import 'package:zombie_sim/GridPoint.dart';
-import 'package:zombie_sim/zombie_game.dart';
+import 'package:zombie_sim/PlayField.dart';
+
+enum Direction { Left, Right, Up, Down }
 
 abstract class GridSprite {
   GridSprite(this.field);
@@ -15,6 +17,10 @@ abstract class GridSprite {
   GridPoint get location => loc;
 
   Point<double> get locationPoint => getPointForGridPos(loc);
+
+  bool get isMoveable;
+  bool get isObstacle;
+  int get strength;
 
   Point<double> getPointForGridPos(GridPoint p) {
     return Point(p.x * PlayField.COL_SIZE, p.y * PlayField.ROW_SIZE);
@@ -29,9 +35,45 @@ abstract class GridSprite {
   }
 
   void translate(Direction direction, {distance = 1}) {
-    if (direction == Direction.Left) loc.x -= distance;
-    if (direction == Direction.Right) loc.x += distance;
-    if (direction == Direction.Up) loc.y -= distance;
-    if (direction == Direction.Down) loc.y += distance;
+    GridPoint newPos = getNextPosition(direction, distance);
+
+    var o = field.getOccupier(newPos);
+    if (o == null || !o.isObstacle) {
+      loc = newPos;
+      return;
+    } else {
+      o.applyForce(direction, strength);
+    }
+  }
+
+  GridPoint getNextPosition(Direction direction, int distance) {
+    GridPoint newPos = GridPoint(loc.x, loc.y);
+    if (direction == Direction.Left) newPos.x -= distance;
+    if (direction == Direction.Right) newPos.x += distance;
+    if (direction == Direction.Up) newPos.y -= distance;
+    if (direction == Direction.Down) newPos.y += distance;
+    return newPos;
+  }
+
+  void applyForce(Direction direction, int force) {
+    if (!isMoveable) {
+      // TODO implement barriers
+      print("I'm not moveable, so test if force > breaking point!");
+      return;
+    }
+
+    GridPoint newPos = getNextPosition(direction, 1);
+
+    var o = field.getOccupier(newPos);
+    if (o == null || !o.isObstacle) {
+      print("push ended with strength $force");
+      // by not just moving to the next spot,
+      // it has the effect of the opposite zombie being thrown across
+      // with all the accumulated force.
+      loc = getNextPosition(direction, force);
+      return;
+    } else {
+      o.applyForce(direction, force + strength);
+    }
   }
 }

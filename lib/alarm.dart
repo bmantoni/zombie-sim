@@ -1,28 +1,27 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/components/animation_component.dart';
 import 'package:zombie_sim/Attractor.dart';
 import 'package:zombie_sim/GridSprite.dart';
-import 'package:zombie_sim/zombie_game.dart';
+import 'package:zombie_sim/PlayField.dart';
 
 class Alarm extends Attractor {
   static const double TEXTURE_SIZE = 32.0;
   static const double ANIMATE_FREQ = 0.1;
 
-  AnimationComponent _component;
-  get component => _component;
+  @override
+  bool get isMoveable => false;
+  @override
+  bool get isObstacle => false;
+  @override
+  int get strength => 1;
 
   Alarm(PlayField f, Point<double> p): super(f) {
-    _component = AnimationComponent.sequenced(
+    component = AnimationComponent.sequenced(
       TEXTURE_SIZE, TEXTURE_SIZE, 'alarm-sheet.png', 2, textureWidth: TEXTURE_SIZE, textureHeight: TEXTURE_SIZE, stepTime: ANIMATE_FREQ);
     setGridPosForPoint(p);
-    _component.x = locationPoint.x;
-    _component.y = locationPoint.y;
-  }
-
-  void render(Canvas c) {
-    _component.render(c);
+    component.x = locationPoint.x;
+    component.y = locationPoint.y;
   }
 
   @override
