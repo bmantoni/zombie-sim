@@ -1,6 +1,9 @@
 import 'dart:math';
 
+import 'package:flame/gestures.dart';
+import 'package:flutter/gestures.dart';
 import 'package:zombie_sim/Attractor.dart';
+import 'package:zombie_sim/Fence.dart';
 import 'package:zombie_sim/GridPoint.dart';
 import 'package:zombie_sim/GridSprite.dart';
 import 'package:zombie_sim/Zombie.dart';
@@ -8,13 +11,15 @@ import 'package:zombie_sim/Alarm.dart';
 import 'package:zombie_sim/zombie_game.dart';
 
 class PlayField {
-  static const double COL_SIZE = 20;
-  static const double ROW_SIZE = 20;
+  // trying to make the blocking look right by increasing this
+  static const double COL_SIZE = 32; 
+  static const double ROW_SIZE = 32;
 
   ZombieGame _game;
 
   final _zombies = List<Zombie>();
   final _alarms = List<Alarm>();
+  final _fences = List<Fence>();
 
   double get width => _game.size.width;
   double get height => _game.size.height;
@@ -22,6 +27,10 @@ class PlayField {
   int get numRows => height ~/ ROW_SIZE;
 
   PlayField(this._game);
+
+  List<GridSprite> getBlockers() {
+    return _zombies.cast<GridSprite>() + _fences.cast<GridSprite>();
+  }
 
   List<Attractor> getAttractors() {
     return _alarms.cast<Attractor>();
@@ -34,6 +43,15 @@ class PlayField {
     }
     _alarms.add(a);
     return a;
+  }
+
+  Fence createFence(double x, double y) {
+    var f = Fence(this, Point(x, y));
+    if (_fences.any((e) => e.location == f.location)) {
+      return null;
+    }
+    _fences.add(f);
+    return f;
   }
 
   Zombie createZombie(ZombieGame zombieGame) {
@@ -49,7 +67,7 @@ class PlayField {
   }
 
   GridSprite getOccupier(GridPoint at) {
-    return _zombies.firstWhere(
+    return getBlockers().firstWhere(
         (e) => e.location.x == at.x && e.location.y == at.y, 
         orElse: () => null);
   }

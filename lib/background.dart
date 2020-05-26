@@ -1,28 +1,70 @@
 import 'dart:ui';
 
+import 'package:flame/components/component.dart';
+import 'package:flame/components/mixins/tapable.dart';
 import 'package:flame/sprite.dart';
+import 'package:flutter/gestures.dart';
 import 'package:zombie_sim/zombie_game.dart';
 
-class Background {
+class Background extends SpriteComponent with Tapable {
   final ZombieGame game;
-  Sprite bgSprite;
   Rect bgRect;
 
   Background(this.game) {
-    bgSprite = Sprite('background.png');
+    sprite = Sprite('background.png');
   }
 
   void render(Canvas c) {
-    if (bgRect == null) {
-      bgRect = Rect.fromLTWH(
+    //if (bgRect == null) {
+      /*bgRect = Rect.fromLTWH(
         0,
         0,
         game.size.width * 2,
         game.size.height * 2,
-      );
-    }
-    bgSprite.renderRect(c, bgRect);
+      );*/
+
+    //}
+    //sprite.renderRect(c, bgRect);
+    super.render(c);
   }
 
-  void update(double t) {}
+  @override
+  void resize(Size size) {
+      this.x = 0;
+      this.y = 0;
+      this.width = game.size.width * 1.8;
+      this.height = game.size.width * 1.7;
+  }
+
+  @override
+  void onTapDown(TapDownDetails details) {
+    switch(game.selected) {
+      case PlaceSelection.Alarm:
+        addAlarm(details);
+        break;
+      case PlaceSelection.Fence:
+        addFence(details);
+        break;
+    }
+  }
+
+  void addAlarm(TapDownDetails details) {
+    print('add alarm');
+    var _alarm = game.field.createAlarm(
+        details.globalPosition.dx, details.globalPosition.dy);
+    if (_alarm != null) {
+      game.add(_alarm.getComponent);
+    }
+  }
+
+  void addFence(TapDownDetails details) {
+    print('add fence');
+    var _fence = game.field.createFence(
+        details.globalPosition.dx, details.globalPosition.dy);
+    if (_fence != null) {
+      game.add(_fence.getComponent);
+    }
+  }
+
+  //void update(double t) {}
 }

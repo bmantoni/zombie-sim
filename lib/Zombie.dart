@@ -21,7 +21,7 @@ class Zombie extends AnimatedGridSprite {
 
   // fixed based on sprite sheet
   static const double TEXTURE_SIZE         = 32.0;
-  static const double ZOMBIE_SIZE          = TEXTURE_SIZE * 3;
+  static const double ZOMBIE_SIZE          = TEXTURE_SIZE * 2;
 
   static const double LOCKON_COOLDOWN      = 0.15;
   static const int RETHINK_MOVE_FREQ       = 2;
@@ -127,10 +127,6 @@ class Zombie extends AnimatedGridSprite {
   }
 
   void _moveTowardsAttractor() {
-    // find nearest & most attractive attractor
-    //field.min
-    //   look in an expanding square around self
-    // move towards it
     if (field.getAttractors().length > 0) {
       final a = _getNearestAttractor();
       _moveTowards(a);
@@ -156,8 +152,6 @@ class Zombie extends AnimatedGridSprite {
     _move(Direction.values[_r.getRand(0, 3)], dist == 1 ? 2 : 1);
   }
 
-  // TODO if something in our way in this direction,
-  // instead of actually move, apply a force in that direction
   void _move(Direction direction, int distance) {
     translate(direction, distance: distance);
     updateComponentPosition();

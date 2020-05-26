@@ -27,15 +27,16 @@ abstract class GridSprite {
   }
 
   void setGridPosForPoint(Point<double> p) {
-    loc = GridPoint(roundTo(p.x, PlayField.COL_SIZE).round(), roundTo(p.y, PlayField.ROW_SIZE).round());
+    loc = GridPoint(roundTo(p.x, PlayField.COL_SIZE), roundTo(p.y, PlayField.ROW_SIZE));
   }
 
   int roundTo(double x, double multiple) {
-    return x ~/ multiple - 1 + (x % multiple > multiple ~/ 2 ? 1 : 0);
+    return x ~/ multiple;
   }
 
   void translate(Direction direction, {distance = 1}) {
     GridPoint newPos = getNextPosition(direction, distance);
+    // how to factor in the blockers?
 
     var o = field.getOccupier(newPos);
     if (o == null || !o.isObstacle) {
@@ -58,7 +59,7 @@ abstract class GridSprite {
   void applyForce(Direction direction, int force) {
     if (!isMoveable) {
       // TODO implement barriers
-      print("I'm not moveable, so test if force > breaking point!");
+      print("I'm not moveable, so test if force (${force}) > breaking point!");
       return;
     }
 

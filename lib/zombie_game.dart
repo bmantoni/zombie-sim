@@ -2,9 +2,8 @@ import 'dart:ui';
 
 import 'package:flame/components/component.dart';
 import 'package:flame/game/game.dart';
-import 'package:flame/gestures.dart';
 import 'package:flame/sprite.dart';
-import 'package:flutter/gestures.dart';
+import 'package:zombie_sim/HUD.dart';
 import 'package:zombie_sim/PlayField.dart';
 import 'package:zombie_sim/background.dart';
 
@@ -20,41 +19,40 @@ class OtherSprite extends SpriteComponent {
   }
 }
 
-class ZombieGame extends BaseGame with TapDetector {
+enum PlaceSelection { Alarm, Fence }
+
+class ZombieGame extends BaseGame {
   Background _bg;
-  PlayField _field;
+  HUD _hud;
+  PlayField field;
+  PlaceSelection selected;
 
   ZombieGame() {
     _bg = Background(this);
-    _field = PlayField(this);
-  }
-
-  @override
-  void onTapDown(TapDownDetails details) {
-    addAlarm(details);
-  }
-
-  void addAlarm(TapDownDetails details) {
-    var _alarm = _field.createAlarm(
-        details.globalPosition.dx, details.globalPosition.dy);
-    if (_alarm != null) {
-      add(_alarm.getComponent);
-    }
+    add(_bg);
+    field = PlayField(this);
+    _hud = HUD(this);
+    _hud.menuItems.forEach((e) { add(e); });
   }
 
   void addZombie() {
-    add(_field.createZombie(this).getComponent);
+    add(field.createZombie(this).getComponent);
+  }
+
+  void setActiveSelection(PlaceSelection s) {
+    this.selected = s;
   }
 
   @override
   void render(Canvas canvas) {
-    _bg.render(canvas);
+    //_bg.render(canvas);
     super.render(canvas);
+    _hud.setItemPositions();
   }
 
   @override
   void update(double t) {
     super.update(t);
-    _field.updateSprites(t);
+    field.updateSprites(t);
   }
 }
