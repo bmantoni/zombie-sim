@@ -23,6 +23,11 @@ class Fence extends GridSprite {
   bool get isObstacle => true;
 
   @override
-  int get strength => 0;
+  int get strength => 4;
 
+  @override
+  void destroy() {
+    _component.destroy();
+    field.removeFence(this);
+  }
 }

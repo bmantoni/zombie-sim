@@ -59,11 +59,8 @@ class Background extends SpriteComponent with Tapable {
 
   void addFence(TapDownDetails details) {
     print('add fence');
-    var _fence = game.field.createFence(
-        details.globalPosition.dx, details.globalPosition.dy);
-    if (_fence != null) {
-      game.add(_fence.getComponent);
-    }
+    game.field.createFence(
+      details.globalPosition.dx, details.globalPosition.dy);
   }
 
   //void update(double t) {}

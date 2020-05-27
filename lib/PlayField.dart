@@ -45,13 +45,18 @@ class PlayField {
     return a;
   }
 
-  Fence createFence(double x, double y) {
+  void createFence(double x, double y) {
     var f = Fence(this, Point(x, y));
     if (_fences.any((e) => e.location == f.location)) {
-      return null;
+      return;
     }
     _fences.add(f);
-    return f;
+    _game.add(f.getComponent);
+  }
+
+  void removeFence(Fence f) {
+    _fences.remove(f);
+    _game.components.remove(f.getComponent);
   }
 
   Zombie createZombie(ZombieGame zombieGame) {

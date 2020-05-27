@@ -28,4 +28,9 @@ class Alarm extends Attractor {
   double getWeightedDistance(GridSprite to) {
     return sqrt( pow(to.loc.x - loc.x, 2) + pow(to.loc.y - loc.y, 2) );
   }
+
+  @override
+  void destroy() {
+    component.destroy();
+  }
 }

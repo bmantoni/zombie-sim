@@ -55,6 +55,11 @@ class Zombie extends AnimatedGridSprite {
     setStartPosition();
   }
 
+  @override
+  void destroy() {
+    component.destroy();
+  }
+
   void setStartPosition() {
     loc = GridPoint(_r.getRand(1, field.numCols - SPAWN_RIGHT_MARGIN_COLS),
         _r.getRand(1, SPAWN_HEIGHT_RANGE));

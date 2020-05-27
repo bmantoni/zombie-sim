@@ -22,6 +22,8 @@ abstract class GridSprite {
   bool get isObstacle;
   int get strength;
 
+  void destroy();
+
   Point<double> getPointForGridPos(GridPoint p) {
     return Point(p.x * PlayField.COL_SIZE, p.y * PlayField.ROW_SIZE);
   }
@@ -58,8 +60,11 @@ abstract class GridSprite {
 
   void applyForce(Direction direction, int force) {
     if (!isMoveable) {
-      // TODO implement barriers
-      print("I'm not moveable, so test if force (${force}) > breaking point!");
+      print("I'm not moveable.");
+      if (force > strength) {
+        print('BREAK!');
+        destroy();
+      }
       return;
     }
 
