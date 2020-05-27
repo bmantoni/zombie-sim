@@ -29,5 +29,6 @@ class Fence extends GridSprite {
   void destroy() {
     _component.destroy();
     field.removeFence(this);
+    field.addBloodyRubble(this.loc);
   }
 }

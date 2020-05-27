@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/gestures.dart';
 import 'package:flutter/gestures.dart';
 import 'package:zombie_sim/Attractor.dart';
+import 'package:zombie_sim/BloodyRubble.dart';
 import 'package:zombie_sim/Fence.dart';
 import 'package:zombie_sim/GridPoint.dart';
 import 'package:zombie_sim/GridSprite.dart';
@@ -63,6 +64,10 @@ class PlayField {
     final z = Zombie(this);
     _zombies.add(z);
     return z;
+  }
+
+  void addBloodyRubble(GridPoint p) {
+    _game.components.add(BloodyRubble(this, p).getComponent);
   }
 
   void updateSprites(double t) {

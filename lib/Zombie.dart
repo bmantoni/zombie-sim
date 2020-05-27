@@ -23,6 +23,10 @@ class Zombie extends AnimatedGridSprite {
   static const double TEXTURE_SIZE         = 32.0;
   static const double ZOMBIE_SIZE          = TEXTURE_SIZE * 2;
 
+  // 1 / X, chance to move 2, and possibly jump an obstacle
+  // so, 1%
+  static const int JUMP_OBSTACLE_CHANCE    = 100;
+
   static const double LOCKON_COOLDOWN      = 0.15;
   static const int RETHINK_MOVE_FREQ       = 2;
   static const int MAX_LOCKON_DIST         = 20;
@@ -153,7 +157,7 @@ class Zombie extends AnimatedGridSprite {
   }
 
   void _moveRandomly() {
-    var dist = _r.getRand(1, 5); // 20% change of moving 2
+    var dist = _r.getRand(1, JUMP_OBSTACLE_CHANCE); 
     _move(Direction.values[_r.getRand(0, 3)], dist == 1 ? 2 : 1);
   }
 
