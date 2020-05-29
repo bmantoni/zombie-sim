@@ -64,6 +64,8 @@ class Zombie extends AnimatedGridSprite {
   @override
   void destroy() {
     component.destroy();
+    field.removeZombie(this);
+    field.addBloodyRubble(this.loc);
   }
 
   void setStartPosition() {

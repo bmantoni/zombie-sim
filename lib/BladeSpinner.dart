@@ -11,7 +11,7 @@ class BladeSpinner extends AnimatedGridSprite {
   @override
   bool get isMoveable => false;
   @override
-  bool get isObstacle => false;
+  bool get isObstacle => true;
   @override
   bool get isKiller => true;
   @override

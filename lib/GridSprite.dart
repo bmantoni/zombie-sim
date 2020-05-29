@@ -39,12 +39,14 @@ abstract class GridSprite {
 
   void translate(Direction direction, {distance = 1}) {
     GridPoint newPos = getNextPosition(direction, distance);
-    // how to factor in the blockers?
 
     var o = field.getOccupier(newPos);
     if (o == null || !o.isObstacle) {
       loc = newPos;
       return;
+    } else if (o.isKiller) {
+      destroy();
+      
     } else {
       o.applyForce(direction, strength);
     }

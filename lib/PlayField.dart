@@ -31,14 +31,11 @@ class PlayField {
 
   PlayField(this._game);
 
-  List<GridSprite> getBlockers() {
-    return _zombies.cast<GridSprite>() + _fences.cast<GridSprite>();
-  }
-
-  List<GridSprite> getPlacedThings() {
-    return _fences.cast<GridSprite>() 
+  Iterable<GridSprite> getBlockers() {
+    return (_fences.cast<GridSprite>() 
       + _alarms.cast<GridSprite>() 
-      + _spinners.cast<GridSprite>();
+      + _zombies.cast<GridSprite>()
+      + _spinners.cast<GridSprite>()).where((e) => e.isObstacle);
   }
 
   List<Attractor> getAttractors() {
@@ -65,7 +62,7 @@ class PlayField {
 
   void createBladeSpinner(double x, double y) {
     var b = BladeSpinner(this, Point(x, y));
-    if (getPlacedThings().any((e) => e.location == b.location)) {
+    if (getBlockers().any((e) => e.location == b.location)) {
       return;
     }
     _spinners.add(b);
@@ -75,6 +72,11 @@ class PlayField {
   void removeFence(Fence f) {
     _fences.remove(f);
     _game.components.remove(f.getComponent);
+  }
+
+  void removeZombie(Zombie zombie) {
+    _zombies.remove(zombie);
+    _game.components.remove(zombie.getComponent);
   }
 
   Zombie createZombie(ZombieGame zombieGame) {
