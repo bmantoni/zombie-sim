@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/gestures.dart';
 import 'package:flutter/gestures.dart';
 import 'package:zombie_sim/Attractor.dart';
+import 'package:zombie_sim/BladeSpinner.dart';
 import 'package:zombie_sim/BloodyRubble.dart';
 import 'package:zombie_sim/Fence.dart';
 import 'package:zombie_sim/GridPoint.dart';
@@ -21,6 +22,7 @@ class PlayField {
   final _zombies = List<Zombie>();
   final _alarms = List<Alarm>();
   final _fences = List<Fence>();
+  final _spinners = List<BladeSpinner>();
 
   double get width => _game.size.width;
   double get height => _game.size.height;
@@ -31,6 +33,12 @@ class PlayField {
 
   List<GridSprite> getBlockers() {
     return _zombies.cast<GridSprite>() + _fences.cast<GridSprite>();
+  }
+
+  List<GridSprite> getPlacedThings() {
+    return _fences.cast<GridSprite>() 
+      + _alarms.cast<GridSprite>() 
+      + _spinners.cast<GridSprite>();
   }
 
   List<Attractor> getAttractors() {
@@ -53,6 +61,15 @@ class PlayField {
     }
     _fences.add(f);
     _game.add(f.getComponent);
+  }
+
+  void createBladeSpinner(double x, double y) {
+    var b = BladeSpinner(this, Point(x, y));
+    if (getPlacedThings().any((e) => e.location == b.location)) {
+      return;
+    }
+    _spinners.add(b);
+    _game.add(b.getComponent);
   }
 
   void removeFence(Fence f) {

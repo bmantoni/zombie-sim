@@ -23,6 +23,9 @@ class Fence extends GridSprite {
   bool get isObstacle => true;
 
   @override
+  bool get isKiller => false;
+
+  @override
   int get strength => 4;
 
   @override

@@ -1,12 +1,7 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/tapable.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/gestures.dart';
-import 'package:zombie_sim/GridSprite.dart';
-import 'package:zombie_sim/PlayField.dart';
 import 'package:zombie_sim/zombie_game.dart';
 
 class HUD {
@@ -21,7 +16,7 @@ class HUD {
 
   HUD(ZombieGame g) {
     this._game = g;
-    _menuItems = [ SelectorAlarm(_game), SelectorFence(_game) ];
+    _menuItems = [ SelectorAlarm(_game), SelectorFence(_game), SelectorBladeSpinner(_game) ];
   }
 
   void setItemPositions() {
@@ -32,17 +27,6 @@ class HUD {
       x += HUD_ITEM_HEIGHT + HUD_H_MARGIN;
     });
   }
-
-  /*
-  void render(Canvas c) {
-    if (_menuItems[0].x == 0) {
-      setItemPositions();
-    }
-    _menuItems.forEach((e) { 
-      e.render(c); 
-    });
-  }
-  */
 }
 
 class SelectorFence extends SpriteComponent with Tapable {
@@ -68,5 +52,18 @@ class SelectorAlarm extends SpriteComponent with Tapable {
 
   void onTapDown(TapDownDetails details) {
     _game.setActiveSelection(PlaceSelection.Alarm);
+  }
+}
+
+class SelectorBladeSpinner extends SpriteComponent with Tapable {
+  ZombieGame _game;
+  SelectorBladeSpinner(this._game) : super.fromSprite(HUD.HUD_ITEM_HEIGHT, HUD.HUD_ITEM_HEIGHT, new Sprite('blade-spinner-frame.png'));
+  @override
+  bool isHud() {
+    return true;
+  }
+
+  void onTapDown(TapDownDetails details) {
+    _game.setActiveSelection(PlaceSelection.Spinner);
   }
 }

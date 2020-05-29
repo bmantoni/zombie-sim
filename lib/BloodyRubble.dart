@@ -26,5 +26,8 @@ class BloodyRubble extends GridSprite {
   bool get isObstacle => false;
 
   @override
+  bool get isKiller => false;
+
+  @override
   int get strength => 0;
 }

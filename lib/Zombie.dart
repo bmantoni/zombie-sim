@@ -45,6 +45,8 @@ class Zombie extends AnimatedGridSprite {
   @override
   bool get isObstacle => true;
   @override
+  bool get isKiller => false;
+  @override
   int get strength => 1;
 
   Zombie(PlayField field) : super(field) {

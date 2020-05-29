@@ -45,11 +45,13 @@ class Background extends SpriteComponent with Tapable {
       case PlaceSelection.Fence:
         addFence(details);
         break;
+      case PlaceSelection.Spinner:
+        addBladeSpinner(details);
+        break;
     }
   }
 
   void addAlarm(TapDownDetails details) {
-    print('add alarm');
     var _alarm = game.field.createAlarm(
         details.globalPosition.dx, details.globalPosition.dy);
     if (_alarm != null) {
@@ -58,10 +60,12 @@ class Background extends SpriteComponent with Tapable {
   }
 
   void addFence(TapDownDetails details) {
-    print('add fence');
     game.field.createFence(
       details.globalPosition.dx, details.globalPosition.dy);
   }
 
-  //void update(double t) {}
+  void addBladeSpinner(TapDownDetails details) {
+    game.field.createBladeSpinner(
+      details.globalPosition.dx, details.globalPosition.dy);
+  }
 }

@@ -19,7 +19,7 @@ class OtherSprite extends SpriteComponent {
   }
 }
 
-enum PlaceSelection { Alarm, Fence }
+enum PlaceSelection { Alarm, Fence, Spinner }
 
 class ZombieGame extends BaseGame {
   Background _bg;

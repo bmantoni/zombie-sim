@@ -20,6 +20,7 @@ abstract class GridSprite {
 
   bool get isMoveable;
   bool get isObstacle;
+  bool get isKiller;
   int get strength;
 
   void destroy();
