@@ -130,7 +130,7 @@ class Zombie extends AnimatedGridSprite {
   }
 
   void lockonIfSomethingIsClose() {
-    if (_lockonCooldownRemaining <= 0 && field.getAttractors().length > 0) {
+    if (_lockonCooldownRemaining <= 0 && field.attractors.length > 0) {
       final nearest = _getNearestAttractor();
       if (nearest.getWeightedDistance(this) < MAX_LOCKON_DIST) {
         _mode = MovementMode.Attracted;
@@ -140,14 +140,14 @@ class Zombie extends AnimatedGridSprite {
   }
 
   void _moveTowardsAttractor() {
-    if (field.getAttractors().length > 0) {
+    if (field.attractors.length > 0) {
       final a = _getNearestAttractor();
       _moveTowards(a);
     }
   }
 
   Attractor _getNearestAttractor() {
-    return field.getAttractors().reduce((value, element) =>
+    return field.attractors.reduce((value, element) =>
         value.getWeightedDistance(this) < element.getWeightedDistance(this)
             ? value
             : element);

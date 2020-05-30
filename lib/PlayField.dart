@@ -19,10 +19,15 @@ class PlayField {
 
   ZombieGame _game;
 
-  final _zombies = List<Zombie>();
-  final _alarms = List<Alarm>();
-  final _fences = List<Fence>();
-  final _spinners = List<BladeSpinner>();
+  final List<GridSprite> _sprites = List<GridSprite>();
+
+  Iterable<Zombie> get _zombies => _sprites.where((e) => e is Zombie).cast<Zombie>();
+  Iterable<Alarm> get _alarms => _sprites.where((e) => e is Alarm).cast<Alarm>();
+  Iterable<Fence> get _fences => _sprites.where((e) => e is Fence).cast<Fence>();
+  Iterable<BladeSpinner> get _spinners => _sprites.where((e) => e is BladeSpinner).cast<BladeSpinner>();
+
+  Iterable<Attractor> get attractors => _sprites.where((e) => e is Attractor).cast<Attractor>();
+  Iterable<GridSprite> get blockers => _sprites.where((e) => e.isObstacle);
 
   double get width => _game.size.width;
   double get height => _game.size.height;
@@ -31,23 +36,12 @@ class PlayField {
 
   PlayField(this._game);
 
-  Iterable<GridSprite> getBlockers() {
-    return (_fences.cast<GridSprite>() 
-      + _alarms.cast<GridSprite>() 
-      + _zombies.cast<GridSprite>()
-      + _spinners.cast<GridSprite>()).where((e) => e.isObstacle);
-  }
-
-  List<Attractor> getAttractors() {
-    return _alarms.cast<Attractor>();
-  }
-
   Alarm createAlarm(double x, double y) {
     var a = Alarm(this, Point(x, y));
     if (_alarms.any((e) => e.location == a.location)) {
       return null;
     }
-    _alarms.add(a);
+    _sprites.add(a);
     return a;
   }
 
@@ -56,32 +50,32 @@ class PlayField {
     if (_fences.any((e) => e.location == f.location)) {
       return;
     }
-    _fences.add(f);
+    _sprites.add(f);
     _game.add(f.getComponent);
   }
 
   void createBladeSpinner(double x, double y) {
     var b = BladeSpinner(this, Point(x, y));
-    if (getBlockers().any((e) => e.location == b.location)) {
+    if (blockers.any((e) => e.location == b.location)) {
       return;
     }
-    _spinners.add(b);
+    _sprites.add(b);
     _game.add(b.getComponent);
   }
 
   void removeFence(Fence f) {
-    _fences.remove(f);
+    _sprites.remove(f);
     _game.components.remove(f.getComponent);
   }
 
   void removeZombie(Zombie zombie) {
-    _zombies.remove(zombie);
+    _sprites.remove(zombie);
     _game.components.remove(zombie.getComponent);
   }
 
   Zombie createZombie(ZombieGame zombieGame) {
     final z = Zombie(this);
-    _zombies.add(z);
+    _sprites.add(z);
     return z;
   }
 
@@ -96,7 +90,7 @@ class PlayField {
   }
 
   GridSprite getOccupier(GridPoint at) {
-    return getBlockers().firstWhere(
+    return blockers.firstWhere(
         (e) => e.location.x == at.x && e.location.y == at.y, 
         orElse: () => null);
   }
