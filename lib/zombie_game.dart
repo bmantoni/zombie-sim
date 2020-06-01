@@ -4,6 +4,7 @@ import 'package:flame/components/component.dart';
 import 'package:flame/game/game.dart';
 import 'package:flame/sprite.dart';
 import 'package:zombie_sim/HUD.dart';
+import 'package:zombie_sim/Level.dart';
 import 'package:zombie_sim/PlayField.dart';
 import 'package:zombie_sim/background.dart';
 
@@ -27,7 +28,12 @@ class ZombieGame extends BaseGame {
   PlayField field;
   PlaceSelection selected;
 
+  Level _level;
+  Level get level => _level;
+
   ZombieGame() {
+    _level = Level(2, 5, 3);
+    
     _bg = Background(this);
     add(_bg);
     field = PlayField(this);

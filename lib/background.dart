@@ -52,11 +52,8 @@ class Background extends SpriteComponent with Tapable {
   }
 
   void addAlarm(TapDownDetails details) {
-    var _alarm = game.field.createAlarm(
+    game.field.createAlarm(
         details.globalPosition.dx, details.globalPosition.dy);
-    if (_alarm != null) {
-      game.add(_alarm.getComponent);
-    }
   }
 
   void addFence(TapDownDetails details) {

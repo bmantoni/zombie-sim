@@ -167,11 +167,16 @@ class Zombie extends AnimatedGridSprite {
 
   void _move(Direction direction, int distance) {
     translate(direction, distance: distance);
+    orientSprite(direction);
     updateComponentPosition();
   }
 
   void updateComponentPosition() {
     component.x = locationPoint.x;
     component.y = locationPoint.y;
+  }
+
+  void orientSprite(Direction direction) {
+    component.renderFlipX = direction == Direction.Right;
   }
 }

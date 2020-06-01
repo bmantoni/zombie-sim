@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:flame/gestures.dart';
-import 'package:flutter/gestures.dart';
 import 'package:zombie_sim/Attractor.dart';
 import 'package:zombie_sim/BladeSpinner.dart';
 import 'package:zombie_sim/BloodyRubble.dart';
@@ -13,7 +11,6 @@ import 'package:zombie_sim/Alarm.dart';
 import 'package:zombie_sim/zombie_game.dart';
 
 class PlayField {
-  // trying to make the blocking look right by increasing this
   static const double COL_SIZE = 32; 
   static const double ROW_SIZE = 32;
 
@@ -36,13 +33,14 @@ class PlayField {
 
   PlayField(this._game);
 
-  Alarm createAlarm(double x, double y) {
+  void createAlarm(double x, double y) {
     var a = Alarm(this, Point(x, y));
     if (_alarms.any((e) => e.location == a.location)) {
-      return null;
+      return;
     }
     _sprites.add(a);
-    return a;
+    _game.add(a.getComponent);
+    _game.level.numAlarms -= 1;
   }
 
   void createFence(double x, double y) {
@@ -52,6 +50,7 @@ class PlayField {
     }
     _sprites.add(f);
     _game.add(f.getComponent);
+    _game.level.numFences -= 1;
   }
 
   void createBladeSpinner(double x, double y) {
@@ -61,6 +60,7 @@ class PlayField {
     }
     _sprites.add(b);
     _game.add(b.getComponent);
+    _game.level.numSpinners -= 1;
   }
 
   void removeFence(Fence f) {
