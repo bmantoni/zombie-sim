@@ -34,6 +34,7 @@ class PlayField {
   PlayField(this._game);
 
   void createAlarm(double x, double y) {
+    if (_game.level.numAlarms < 1) return;
     var a = Alarm(this, Point(x, y));
     if (_alarms.any((e) => e.location == a.location)) {
       return;
@@ -44,6 +45,7 @@ class PlayField {
   }
 
   void createFence(double x, double y) {
+    if (_game.level.numFences < 1) return;
     var f = Fence(this, Point(x, y));
     if (_fences.any((e) => e.location == f.location)) {
       return;
@@ -54,6 +56,7 @@ class PlayField {
   }
 
   void createBladeSpinner(double x, double y) {
+    if (_game.level.numSpinners < 1) return;
     var b = BladeSpinner(this, Point(x, y));
     if (blockers.any((e) => e.location == b.location)) {
       return;
